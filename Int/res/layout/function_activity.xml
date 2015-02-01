@@ -1,0 +1,289 @@
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#000000"
+    android:gravity="center"
+    >
+
+    <Button
+        android:id="@+id/send2"
+        android:layout_width="100dip"
+        android:layout_height="100dip"
+        android:background="@drawable/select"
+        android:text="开"
+        android:layout_marginBottom="100dip"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/send"
+        android:layout_width="100dip"
+        android:layout_height="100dip"
+        android:background="@drawable/select"
+        android:text="关"
+        android:textSize="20sp" />
+
+    <ImageView
+        android:id="@+id/logo_image"
+        android:layout_width="0dip"
+        android:layout_height="0dip"
+        android:layout_weight="0" />
+
+    <LinearLayout
+        android:layout_width="0dip"
+        android:layout_height="0dip"
+        android:layout_weight="0"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="0dip"
+                android:text="设备名称：" />
+
+            <TextView
+                android:id="@+id/device_name"
+                android:layout_width="0dip"
+                android:layout_height="0dip" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="0dip"
+                android:text="设备地址：" />
+
+            <TextView
+                android:id="@+id/device_addres"
+                android:layout_width="0dip"
+                android:layout_height="0dip" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="0dip"
+                android:text="连接状态：" />
+
+            <TextView
+                android:id="@+id/connect_sate"
+                android:layout_width="0dip"
+                android:layout_height="0dip" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="0dip"
+                android:text="当前rssi ：" />
+
+            <TextView
+                android:id="@+id/now_rssi"
+                android:layout_width="0dip"
+                android:layout_height="0dip" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="0dip"
+                android:text="目标uuid：" />
+
+            <TextView
+                android:id="@+id/goal_uuid"
+                android:layout_width="0dip"
+                android:layout_height="0dip" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            />
+
+        <TabHost
+            android:id="@+id/tabhost"
+            android:layout_width="0dip"
+            android:layout_height="0dip" >
+
+            <!-- TabWidget组件id值不可变 -->
+
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="0dip"
+                android:layout_height="0dip" >
+            </TabWidget>
+
+            <!-- FrameLayout布局，id值不可变 -->
+
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="0dip"
+                android:layout_height="0dip"
+                android:paddingTop="45dip"
+                 >
+
+                <RelativeLayout
+                    android:id="@+id/tab1"
+                    android:layout_width="0dip"
+                     android:layout_height="0dip"
+                     >
+                    <TextView
+                        android:id="@+id/tab1_text"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="0dip"
+                        android:layout_height="0dip"
+                         />
+                </RelativeLayout>
+                <!-- 第二个Tab的内容 -->
+
+                <RelativeLayout
+                    android:id="@+id/tab2"
+                    android:layout_width="0dip"
+                     android:layout_height="0dip"
+                     >
+                    <TextView
+                        android:layout_width="0dip"
+                        android:layout_height="0dip"
+                        android:layout_alignParentBottom="true"
+                        />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tab3"
+                    android:layout_width="0dip"
+                     android:layout_height="0dip"
+                     >
+                    <TextView
+                        android:layout_width="0dip"
+                        android:layout_height="0dip"
+                        android:layout_alignParentBottom="true"
+                         />
+                </RelativeLayout>
+                <!-- 第4个Tab的内容 -->
+
+                <RelativeLayout
+                    android:id="@+id/tab4"
+                    android:layout_width="0dip"
+                     android:layout_height="0dip"
+                     >
+                    <TextView
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="0dip"
+                        android:layout_height="0dip"
+                         />
+                </RelativeLayout>
+            </FrameLayout>
+        </TabHost>
+    </LinearLayout>
+
+    <View
+        android:layout_width="0dip"
+        android:layout_height="0dip"
+        />
+
+    <LinearLayout
+        android:layout_width="0dip"
+        android:layout_height="0dip"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:layout_weight="3" />
+
+        <Button
+            android:id="@+id/hex_ab1"
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:text="hex/ab"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="0dip"
+        android:layout_height="0dip"
+        />
+
+    <EditText
+        android:id="@+id/hex_edit"
+        android:layout_width="0dip"
+        android:layout_height="0dip" />
+
+    <View
+        android:layout_width="0dip"
+        android:layout_height="0dip"
+        />
+
+    <LinearLayout
+        android:layout_width="0dip"
+        android:layout_height="0dip"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:layout_weight="0"
+            android:text="定时发送（ms）" />
+
+        <Button
+            android:id="@+id/hex_ab2"
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:layout_weight="0"
+            android:text="hex/ab"
+            android:textSize="15sp" />
+
+        
+    </LinearLayout>
+
+    <View
+        android:layout_width="0dip"
+        android:layout_height="0dip"
+        />
+
+    <LinearLayout
+        android:layout_width="0dip"
+        android:layout_height="0dip"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/send_recive"
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:layout_weight="0"
+            android:hint="发送字节x,接收字节x"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/restart"
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:layout_weight="2"
+            android:text="重新计数"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+</LinearLayout>
