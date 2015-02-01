@@ -1,10 +1,12 @@
 package com.xxnbluettask.ex039ble;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -13,6 +15,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -29,9 +32,9 @@ public class FunctionActivity extends Activity implements OnClickListener {
 
 	private TextView device_name, device_addres, connect_sate, now_rssi,
 			goal_uuid, send_recive, recive,zhushouTextView;
-	private Button hex_ab1, hex_ab2, send, restart, send2;
+	private Button hex_ab1, hex_ab2, send, restart, send2,change,sure,close;
 	private TabHost mTabHost;
-	private EditText hex_edit;
+	private EditText hex_edit,textchange;
 	private FrameLayout tabcontent;
 	protected static String EXTRAS_DEVICE_NAME = "DEVICE_NAME";;
 	protected static String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
@@ -100,7 +103,10 @@ public class FunctionActivity extends Activity implements OnClickListener {
 		send.setOnClickListener(this);
 		send2 = (Button) findViewById(R.id.send2);
 		send2.setOnClickListener(this);
+		change = (Button) findViewById(R.id.changebutton);
+		change.setOnClickListener(this);
 		hex_edit = (EditText) findViewById(R.id.hex_edit);
+		textchange = (EditText) findViewById(R.id.editTextchange);
 		hex_edit.addTextChangedListener(new TextWatcher() {
 			
 			@Override
@@ -167,6 +173,9 @@ public class FunctionActivity extends Activity implements OnClickListener {
 		case R.id.send2:
 			send2();
 			break;
+		case R.id.changebutton:
+			change();
+			break;
 		case R.id.hex_ab1:
 			hex_ab1();
 			break;
@@ -181,6 +190,8 @@ public class FunctionActivity extends Activity implements OnClickListener {
 		}
 
 	}
+
+	
 
 	private void restart() {
 		send_recive.setText("接受"+zhushouTextView.getText().toString().getBytes().length
@@ -224,6 +235,46 @@ public class FunctionActivity extends Activity implements OnClickListener {
 		MyGattDetail.write(ok);
 		send_recive.setText("发送"+hex_edit.getText().toString().length()*2+"字节");
 		hex_edit.setText("");//发送完清空
+	}
+	private void change() {
+		showDialog();
+	}
+	
+	private void showDialog() {
+		LayoutInflater inflater = LayoutInflater.from(this);
+		View view = inflater.inflate(R.layout.change_dialog,null);
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("请输入新密码");
+		builder.setView(view);
+		builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				textchange = (EditText) findViewById(R.id.editTextchange);
+				String changemessage= textchange.getText().toString();
+				sendchange(changemessage);
+				
+			}
+
+			private void sendchange(String changemessage) {
+				// TODO Auto-generated method stub
+				
+					f2=0;
+					MyGattDetail.write(changemessage);
+					send_recive.setText("发送"+hex_edit.getText().toString().length()*2+"字节");
+			}
+		});
+		
+		builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+				
+			}
+		});
+		builder.show();
+		
 	}
 
 	private BroadcastReceiver myReceiver = new BroadcastReceiver() {
