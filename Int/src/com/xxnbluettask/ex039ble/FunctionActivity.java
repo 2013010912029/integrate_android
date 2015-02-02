@@ -32,7 +32,7 @@ public class FunctionActivity extends Activity implements OnClickListener {
 
 	private TextView device_name, device_addres, connect_sate, now_rssi,
 			goal_uuid, send_recive, recive,zhushouTextView;
-	private Button hex_ab1, hex_ab2, send, restart, send2,change;
+	private Button hex_ab1, hex_ab2, send, restart, send2,change,sure,close;
 	private TabHost mTabHost;
 	private EditText hex_edit,textchange;
 	private FrameLayout tabcontent;
@@ -174,7 +174,7 @@ public class FunctionActivity extends Activity implements OnClickListener {
 			send2();
 			break;
 		case R.id.changebutton:
-			showDialog();
+			change();
 			break;
 		case R.id.hex_ab1:
 			hex_ab1();
@@ -236,7 +236,9 @@ public class FunctionActivity extends Activity implements OnClickListener {
 		send_recive.setText("发送"+hex_edit.getText().toString().length()*2+"字节");
 		hex_edit.setText("");//发送完清空
 	}
-	
+	private void change() {
+		showDialog();
+	}
 	
 	private void showDialog() {
 		LayoutInflater inflater = LayoutInflater.from(this);
@@ -244,24 +246,30 @@ public class FunctionActivity extends Activity implements OnClickListener {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("请输入新密码");
 		builder.setView(view);
-		
 		builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				textchange = (EditText) findViewById(R.id.editTextchange);
-				f2=0;
-				MyGattDetail.write(textchange.getText().toString());
-				send_recive.setText("发送"+hex_edit.getText().toString().length()*2+"字节");
-				hex_edit.setText("");//发送完清空
+				String changemessage= textchange.getText().toString();
+				sendchange(changemessage);
+				
 			}
-			
+
+			private void sendchange(String changemessage) {
+				// TODO Auto-generated method stub
+				
+					f2=0;
+					MyGattDetail.write(changemessage);
+					send_recive.setText("发送"+hex_edit.getText().toString().length()*2+"字节");
+			}
 		});
 		
 		builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				
 				
 			}
 		});
