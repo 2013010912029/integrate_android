@@ -1,5 +1,8 @@
 package com.xxnbluettask.ex039ble;
 
+import java.util.Calendar;
+import java.util.zip.Inflater;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.BroadcastReceiver;
@@ -9,10 +12,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.graphics.YuvImage;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -27,9 +33,11 @@ import android.widget.Toast;
 
 public class FunctionActivity extends Activity implements OnClickListener {
 
-	private TextView device_name, device_addres, connect_sate, now_rssi,
+	private Context ct;
+	private Calendar cal;
+	public static TextView device_name, device_addres, connect_sate, now_rssi,
 			goal_uuid, send_recive, recive,zhushouTextView;
-	private Button hex_ab1, hex_ab2, send, restart, send2,changebutton;
+	private Button hex_ab1, hex_ab2, send, restart, send2;
 	private TabHost mTabHost;
 	private EditText hex_edit;
 	private FrameLayout tabcontent;
@@ -43,8 +51,9 @@ public class FunctionActivity extends Activity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.function_activity);
+		ct = this;
 		init();
-		Bundle bundle = getIntent().getExtras();
+		Bundle bundle = getIntent().getExtras();  //bundle包含了从MyGattDetail中传来的东西
 		if (bundle != null) {
 			mDeviceAddress = bundle.getString(EXTRAS_DEVICE_ADDRESS).toString();
 			device_addres.setText(mDeviceAddress);
@@ -62,6 +71,12 @@ public class FunctionActivity extends Activity implements OnClickListener {
 		IntentFilter intentFilter = new IntentFilter(
 				"com.example.bluetooth.le.ACTION_DATA_AVAILABLE");
 		registerReceiver(myReceiver, intentFilter);//注册广播
+	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
 	}
 
 	private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -90,6 +105,7 @@ public class FunctionActivity extends Activity implements OnClickListener {
 		connect_sate = (TextView) findViewById(R.id.connect_sate);
 		now_rssi = (TextView) findViewById(R.id.now_rssi);
 		goal_uuid = (TextView) findViewById(R.id.goal_uuid);
+		
 		hex_ab1 = (Button) findViewById(R.id.hex_ab1);
 		hex_ab1.setOnClickListener(this);
 		hex_ab2 = (Button) findViewById(R.id.hex_ab2);
@@ -100,8 +116,6 @@ public class FunctionActivity extends Activity implements OnClickListener {
 		send.setOnClickListener(this);
 		send2 = (Button) findViewById(R.id.send2);
 		send2.setOnClickListener(this);
-		changebutton = (Button) findViewById(R.id.changebutton);
-		changebutton.setOnClickListener(this);
 		hex_edit = (EditText) findViewById(R.id.hex_edit);
 		
 		hex_edit.addTextChangedListener(new TextWatcher() {
@@ -160,7 +174,7 @@ public class FunctionActivity extends Activity implements OnClickListener {
 			}
 		});
 	}
-
+//  发送开关消息等
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -176,9 +190,6 @@ public class FunctionActivity extends Activity implements OnClickListener {
 		case R.id.hex_ab2:
 			hex_ab2();
 			break;
-		case R.id.changebutton:
-			sendchange();
-			break;
 		case R.id.restart:
 			restart();
 			break;
@@ -188,9 +199,41 @@ public class FunctionActivity extends Activity implements OnClickListener {
 
 	}
 
+	//菜单选项
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		
+		switch (item.getItemId()) {
+		case R.id.action_settings1:
+			sendchange();
+			break;
+		case R.id.action_settings2:
+			showHistory();
+			break;
+		case R.id.action_settings3:
+			AboutUs();
+			break;
+		default:
+			break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
 	private void sendchange() {
 		Intent intentchange = new Intent(this, ChangeActivity.class);
 		startActivityForResult(intentchange, 1);
+	}
+	private void showHistory()
+	{
+		Intent intentHistory = new Intent();
+		intentHistory.setClass(this,HistoryActivity.class);
+		startActivity(intentHistory);
+	}
+	private void AboutUs()
+	{
+		Intent intent_aboutUs = new Intent();
+		intent_aboutUs.setClass(this,AboutUs.class);
+		startActivity(intent_aboutUs);
 	}
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -243,12 +286,16 @@ public class FunctionActivity extends Activity implements OnClickListener {
 		MyGattDetail.write(ok2);
 		send_recive.setText("发送"+hex_edit.getText().toString().length()*2+"字节");
 		hex_edit.setText("");//发送完清空
+		
+		
 	}
 	private void send() {
 		f2=0;
 		MyGattDetail.write(ok);
 		send_recive.setText("发送"+hex_edit.getText().toString().length()*2+"字节");
 		hex_edit.setText("");//发送完清空
+		
+		
 	}
 
 	private BroadcastReceiver myReceiver = new BroadcastReceiver() {
@@ -258,8 +305,16 @@ public class FunctionActivity extends Activity implements OnClickListener {
 			if (intent.getAction().equals(
 					BluetoothLeService.ACTION_DATA_AVAILABLE)) {
 				f1=0;
+				String last = zhushouTextView.getText().toString();
 				zhushouTextView.setText(intent.getExtras().getString(
 						BluetoothLeService.EXTRA_DATA));
+				String history = HistoryActivity.txtHistory.getText().toString();
+				if (zhushouTextView.getText().toString().subSequence(0, 4)=="open"&&zhushouTextView.getText().toString().subSequence(0, 4)!=last.subSequence(0, 4) ){
+					HistoryActivity.txtHistory.setText(history+"/n"+cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DAY_OF_MONTH)+"-"+cal.get(Calendar.HOUR_OF_DAY)+":"+cal.get(Calendar.MINUTE)+"   开门");
+				}
+				else if (zhushouTextView.getText().toString().subSequence(0, 4)=="clos"&&zhushouTextView.getText().toString().subSequence(0, 4)!=last.subSequence(0, 4)) {
+					HistoryActivity.txtHistory.setText(history+"/n"+cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DAY_OF_MONTH)+"-"+cal.get(Calendar.HOUR_OF_DAY)+":"+cal.get(Calendar.MINUTE)+"   关门");
+				}
 				send_recive.setText("接受"+intent.getExtras().getString(
 						BluetoothLeService.EXTRA_DATA).toString().getBytes().length
 						+"字节，"+"发送"+hex_edit.getText().toString().getBytes().length+"字节");

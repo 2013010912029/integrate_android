@@ -2,6 +2,7 @@ package com.xxnbluettask.ex039ble;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.Activity;
@@ -27,14 +28,15 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-	BluetoothAdapter mBluetoothAdapter;
-	private ArrayList<Integer> rssis;
+	BluetoothAdapter mBluetoothAdapter; //Bluetoothadapter类用于控制本地的蓝牙设备
+	private ArrayList<Integer> rssis;  // 整数数组（更灵活的数组 无固定长度
 	//private LeDeviceListAdapter mLeDeviceListAdapter;
 	
-	BluetoothDevice terget_device=null;
+	BluetoothDevice terget_device=null; // 远程蓝牙设备
 	
-	BluetoothGatt mBluetoothGatt=null;
-	
+	BluetoothGatt mBluetoothGatt=null; //继承BluetoothProfile，通过BluetoothGatt可以连接设备（connect）,
+	                                  //发现服务（discoverServices），并把相应地属性返回到BluetoothGattCallback 
+										//BluetoothProfile 通用的收发数据规范
 	int REQUEST_ENABLE_BT=1;
 	
 	Button btn,btn_connect,btn_disconnect;
@@ -42,6 +44,8 @@ public class MainActivity extends Activity {
 	
 	private boolean mScanning;
     private Handler mHandler;
+    private int k = 0;
+    private int temp_position;
 
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
@@ -82,6 +86,7 @@ public class MainActivity extends Activity {
 		
 		
 		mHandler=new Handler();
+		scanLeDevice(true);   // 打开该页面后实现自动扫描 并且10秒后自动停止扫描
 		
 		btn=(Button)this.findViewById(R.id.button1);
 		
@@ -99,31 +104,21 @@ public class MainActivity extends Activity {
 		
 		btn_connect=(Button)this.findViewById(R.id.button2);
 		btn_connect.setVisibility(View.GONE);
-		
-		btn_connect.setOnClickListener(new View.OnClickListener() {
+		if(terget_device!=null)
+		{
+			mBluetoothGatt = terget_device.connectGatt(MainActivity.this, false, bleGattCallback);
+			System.out.println("连接成功!");
 			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
-				if(terget_device!=null)
-				{
-					mBluetoothGatt = terget_device.connectGatt(MainActivity.this, false, bleGattCallback);
-					System.out.println("连接成功!");
-					
-					mBluetoothGatt.discoverServices();
-					/*
-					list_service=mBluetoothGatt.getServices();
-					
-					for(BluetoothGattService service :list_service )
-					{
-						System.out.println(service.getUuid().toString());
-					}
-					*/
-				}
-				
+			mBluetoothGatt.discoverServices();
+			/*
+			list_service=mBluetoothGatt.getServices();
+			
+			for(BluetoothGattService service :list_service )
+			{
+				System.out.println(service.getUuid().toString());
 			}
-		});
+			*/
+		}
 		
 		btn_disconnect=(Button)this.findViewById(R.id.button3);
 		btn_disconnect.setVisibility(View.GONE);
@@ -140,25 +135,57 @@ public class MainActivity extends Activity {
 				
 			}
 		});
+		//如果发现是air的已绑定的门锁 则自动转跳页面 (若有多个air门锁 则进行选择跳转 若没有显示没有门锁
+		//不对 这里有个bug 没有判断该ble是否已经配对！！
 		
-		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> arg0,  View v, int position, long id) {
-				// TODO Auto-generated method stub
-				final BluetoothDevice device = mleDeviceListAdapter.getDevice(position);
-		        if (device == null) return;
-		        final Intent intent = new Intent(MainActivity.this, MyGattDetail.class);
-		        intent.putExtra(MyGattDetail.EXTRAS_DEVICE_NAME, device.getName());
-		        intent.putExtra(MyGattDetail.EXTRAS_DEVICE_ADDRESS, device.getAddress());
-		        intent.putExtra(MyGattDetail.EXTRAS_DEVICE_RSSI, rssis.get(position).toString());
+		for (int i = 0; i < lv.getCount(); i++) {  
+			//i is the position of item
+			
+			BluetoothDevice device_tem = mleDeviceListAdapter.getDevice(i);
+			if (device_tem.getName().toString().startsWith("air")) {
+				k++;
+				temp_position = i;
+			}
+			if (k==1) {
+				final BluetoothDevice air_device = mleDeviceListAdapter.getDevice(temp_position);
+				final Intent intent_tem = new Intent(MainActivity.this,MyGattDetail.class);
+				intent_tem.putExtra(MyGattDetail.EXTRAS_DEVICE_NAME,air_device.getName());
+				intent_tem.putExtra(MyGattDetail.EXTRAS_DEVICE_ADDRESS, air_device.getAddress());
+		        intent_tem.putExtra(MyGattDetail.EXTRAS_DEVICE_RSSI, rssis.get(temp_position).toString());
 		        if (mScanning) {
 		            mBluetoothAdapter.stopLeScan(mLeScanCallback);
 		            mScanning = false;
 		        }
-		        startActivity(intent);
+		        startActivity(intent_tem);
 			}
-		});
+			else if (k>1) {
+				lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+					@Override
+					public void onItemClick(AdapterView<?> arg0,  View v, int position, long id) {
+						// TODO Auto-generated method stub
+						final BluetoothDevice device = mleDeviceListAdapter.getDevice(position);
+				        if (device == null) return;
+				        final Intent intent = new Intent(MainActivity.this, MyGattDetail.class);
+				        intent.putExtra(MyGattDetail.EXTRAS_DEVICE_NAME, device.getName());
+				        intent.putExtra(MyGattDetail.EXTRAS_DEVICE_ADDRESS, device.getAddress());
+				        intent.putExtra(MyGattDetail.EXTRAS_DEVICE_RSSI, rssis.get(position).toString());
+				        if (mScanning) {
+				            mBluetoothAdapter.stopLeScan(mLeScanCallback);
+				            mScanning = false;
+				        }
+				        startActivity(intent);
+					}
+				});
+			}
+			else {
+				Context context = getApplicationContext();
+				String message = "没有找到门锁╮(╯_╰)╭";
+				int duration = Toast.LENGTH_LONG;
+				Toast toast  = Toast.makeText(context, message, duration);
+				toast.show();
+			}
+		}
 		
 	}
 	
@@ -174,7 +201,7 @@ public class MainActivity extends Activity {
                     mScanning = false;
                     mBluetoothAdapter.stopLeScan(mLeScanCallback);
                 }
-            }, SCAN_PERIOD);
+            }, SCAN_PERIOD); //SCAN_PERIOD = 10000(10S)    在10秒后调用stopLeScan函数 结束扫描
 
             mScanning = true;
             mBluetoothAdapter.startLeScan(mLeScanCallback);
@@ -193,19 +220,20 @@ public class MainActivity extends Activity {
 		@Override
 		public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
 			// TODO Auto-generated method stub
-				
-			runOnUiThread(new Runnable() {
+			if(device.getName().toString().startsWith("air", 0)){	//在此处加了一个判断 是air时才进行下面的方法,这里可能加错判断地方了
+				runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                 	mleDeviceListAdapter.addDevice(device,rssi);
                 	mleDeviceListAdapter.notifyDataSetChanged();
-                }
-            });
+                	}
+				});
 			
-			System.out.println("Address:"+device.getAddress());
-			System.out.println("Name:"+device.getName());
-			System.out.println("rssi:"+rssi);
+				System.out.println("Address:"+device.getAddress());   
+				System.out.println("Name:"+device.getName());
+				System.out.println("rssi:"+rssi);
 			
+			}
 		}
 	};
 	
@@ -225,7 +253,7 @@ public class MainActivity extends Activity {
         
         public LeDeviceListAdapter() {
             super();
-            rssis=new ArrayList<Integer>();
+            rssis=new ArrayList<Integer>(); 
             mLeDevices = new ArrayList<BluetoothDevice>();
             mInflator = getLayoutInflater();
         }

@@ -43,6 +43,18 @@
             android:name="com.xxnbluettask.ex039ble.ChangeActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
+        
+         <activity 
+            android:name="com.xxnbluettask.ex039ble.HistoryActivity"
+             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            
+        </activity>
+        
+         <activity 
+            android:name="com.xxnbluettask.ex039ble.AboutUs"
+             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            
+        </activity>
         <service android:name="BluetoothLeService" android:enabled="true"></service>
     </application>
 

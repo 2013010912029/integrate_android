@@ -25,7 +25,7 @@ import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
-public class MyGattDetail extends Activity {
+public class MyGattDetail extends Activity {       //选择group中的最后一个 然后再选择其中的最后一个child（未完成
 
 	private final static String TAG = MyGattDetail.class.getSimpleName();
 	protected static String EXTRAS_DEVICE_NAME ="DEVICE_NAME";;
@@ -44,13 +44,13 @@ public class MyGattDetail extends Activity {
     
     private String mDeviceName;
     private String mDeviceAddress;
-    private Bundle b;
+    private Bundle b;    //什么是bundle？ 可以用来存放activity之间所需要传输的数据
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
     
     private static BluetoothGattCharacteristic target_chara=null;
     
-    private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics =
+    private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics =    //用来存放所有的特征值
             new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
     
 	@Override
@@ -62,7 +62,7 @@ public class MyGattDetail extends Activity {
 		tv_addr=(TextView)this.findViewById(R.id.tv_info_deviceaddr);
 		tv_name=(TextView)this.findViewById(R.id.tv_info_devicename);
 		tv_status=(TextView)this.findViewById(R.id.tv_info_constatus);
-		tv_uuid=(TextView)this.findViewById(R.id.tv_targetuuid);
+		tv_uuid=(TextView)this.findViewById(R.id.tv_targetuuid);  //该ble选择的特征值
 		
 		tv_uuid.setText("还没有选择目标特征值");
 		tv_rssi=(TextView) findViewById(R.id.rssi_value);
@@ -70,12 +70,12 @@ public class MyGattDetail extends Activity {
 		lv=(ExpandableListView)this.findViewById(R.id.expandableListView1);
 		lv.setOnChildClickListener(servicesListClickListner);
 		
-		b=getIntent().getExtras();
-		tv_addr.setText(b.getString(EXTRAS_DEVICE_ADDRESS));
-		mDeviceAddress=b.getString(EXTRAS_DEVICE_ADDRESS);
-		tv_name.setText(b.getString(EXTRAS_DEVICE_NAME));
-		mDeviceName=b.getString(EXTRAS_DEVICE_NAME);
-		tv_rssi.setText(b.getString(EXTRAS_DEVICE_RSSI));
+		b=getIntent().getExtras();   //包含了所选择的ble的信息（name，rssi，address）
+		tv_addr.setText(b.getString(EXTRAS_DEVICE_ADDRESS));  //该ble的address
+		mDeviceAddress=b.getString(EXTRAS_DEVICE_ADDRESS);    //
+		tv_name.setText(b.getString(EXTRAS_DEVICE_NAME));     //该ble的name
+		mDeviceName=b.getString(EXTRAS_DEVICE_NAME);          //
+		tv_rssi.setText(b.getString(EXTRAS_DEVICE_RSSI));     //该ble的rssi即距离
 		 Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
 	     bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 	}
@@ -264,6 +264,7 @@ public class MyGattDetail extends Activity {
 	                HashMap<String, String> currentCharaData = new HashMap<String, String>();
 	                uuid = gattCharacteristic.getUuid().toString();
                 
+	                // 在SampleGattAttributes中查表，得到各个特征值的名字
 	                currentCharaData.put(
 	                        LIST_NAME, SampleGattAttributes.lookup(uuid, unknownCharaString));
 	                currentCharaData.put(LIST_UUID, uuid);
@@ -300,7 +301,7 @@ public class MyGattDetail extends Activity {
 	            
 	        }
 	        
-	        SimpleExpandableListAdapter gattServiceAdapter = new SimpleExpandableListAdapter(
+	        SimpleExpandableListAdapter gattServiceAdapter = new SimpleExpandableListAdapter(  // 用来显示出来特征值列表
 	                this,
 	                gattServiceData,
 	                android.R.layout.simple_expandable_list_item_2,
@@ -321,7 +322,7 @@ public class MyGattDetail extends Activity {
 	 
 	 */
 	 
-	 private final ExpandableListView.OnChildClickListener servicesListClickListner =
+	 private final ExpandableListView.OnChildClickListener servicesListClickListner =   //这个是那个目标特征值列表的选择函数
 	            new ExpandableListView.OnChildClickListener() {
 	                @Override
 	                public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
@@ -334,7 +335,7 @@ public class MyGattDetail extends Activity {
 	                        target_chara=characteristic;
 	                        
 	                        
-	                        final int charaProp = characteristic.getProperties();
+	                        final int charaProp = characteristic.getProperties(); // properties性能，内容
 	                      /*  if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
 	                            if (mNotifyCharacteristic != null) {
 	                                mBluetoothLeService.setCharacteristicNotification(
@@ -350,7 +351,7 @@ public class MyGattDetail extends Activity {
 	                            mBluetoothLeService.setCharacteristicNotification(
 	                                    characteristic, true);
 	                        }
-	                        tv_uuid.setText(characteristic.getUuid().toString());
+	                        tv_uuid.setText(characteristic.getUuid().toString()); 
 	                        Intent intent=new Intent();
 	                        b.putString("CONNET_SATE", status);
 	                        b.putString("UUID", characteristic.getUuid().toString());

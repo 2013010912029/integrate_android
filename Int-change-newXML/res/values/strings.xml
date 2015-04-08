@@ -7,5 +7,8 @@
     <string name="sure">确定</string>
     <string name="cancle">取消</string>
     <string name="changebutton">更改密码</string>
+    <string name="button_history">开门记录</string>
+    <string name="textview">开门记录</string>
+    <string name="clean">清除历史记录</string>
 
 </resources>
